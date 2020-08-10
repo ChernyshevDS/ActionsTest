@@ -22,7 +22,6 @@ namespace ActionsTest
         public MainWindow()
         {
             InitializeComponent();
-
             this.DataContext = new MainVM();
         }
     }
