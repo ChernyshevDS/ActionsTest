@@ -18,6 +18,7 @@ jobs:
     steps:
     - name: Checkout
       uses: actions/checkout@v2
+      run: git fetch --prune --unshallow --tags
 
     - name: Install .NET Core
       uses: actions/setup-dotnet@v1
@@ -36,8 +37,7 @@ jobs:
     - name: Release
       shell: bash
       run: |
-        git fetch --tags
-        tag=$(git describe)
+        tag=$(git describe --always)
         release_name="ActionsTest-$tag-win-x64"
         
         dotnet publish ActionsTest\ActionsTest.csproj --runtime win-x64 -c Release -o ${release_name} --self-contained false
