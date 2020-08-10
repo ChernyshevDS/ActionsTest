@@ -40,7 +40,7 @@ jobs:
         tag=$(git describe --always)
         release_name="ActionsTest-$tag-win-x64"
         
-        dotnet publish ActionsTest\ActionsTest.csproj --runtime win-x64 -c Release -o ${release_name} --self-contained false
+        dotnet publish ActionsTest/ActionsTest.csproj --runtime win-x64 -c Release -o ${release_name} --self-contained false
         
         7z a -tzip "${release_name}.zip" "./${release_name}/*"
         
