@@ -8,8 +8,7 @@ on:
 
 jobs:
   build:
-    runs-on: windows-latest  # For a list of available runner types, refer to
-                             # https://help.github.com/en/actions/reference/workflow-syntax-for-github-actions#jobsjob_idruns-on
+    runs-on: windows-latest
 
     env:
       DOTNET_CLI_TELEMETRY_OPTOUT: true
@@ -19,22 +18,17 @@ jobs:
     steps:
     - name: Checkout
       uses: actions/checkout@v2
-      with:
-        fetch-depth: 0
 
-    # Install the .NET Core workload
     - name: Install .NET Core
       uses: actions/setup-dotnet@v1
       with:
         dotnet-version: 3.1.101
+    
+    - name: Restore
+      run: dotnet restore
+      
+    - name: Build
+      run: dotnet build --no-restore --configuration Release
 
-    # Add  MSBuild to the PATH: https://github.com/microsoft/setup-msbuild
-    - name: Setup MSBuild.exe
-      uses: microsoft/setup-msbuild@2008f912f56e61277eefaac6d1888b750582aa16
-
-    # Execute all unit tests in the solution
     - name: Execute unit tests
-      run: dotnet test
-
-    - name: Build with dotnet
-      run: dotnet build --configuration Release
+      run: dotnet test --no-build
