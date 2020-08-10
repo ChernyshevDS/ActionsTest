@@ -3,8 +3,8 @@ name: .NET Core Desktop
 on:
   push:
     branches: [ master ]
-  pull_request:
-    branches: [ master ]
+    tags:
+      - '*'
 
 jobs:
   build:
@@ -33,7 +33,7 @@ jobs:
     - name: Execute unit tests
       run: dotnet test --no-build --configuration Release
       
-    - name: Release
+    - name: Make release archive
       shell: bash
       run: |
         git fetch --prune --unshallow --tags
@@ -42,14 +42,28 @@ jobs:
         
         dotnet publish ActionsTest/ActionsTest.csproj --runtime win-x64 -c Release -o ${release_name} --self-contained false
         
-        7z a -tzip "${release_name}.zip" "./${release_name}/*"
+        7z a -tzip "ActionsTest-win-x64.zip" "./${release_name}/*"
         
         rm -r "$release_name"
-        
-    - name: Publish
-      uses: softprops/action-gh-release@v1
-      if: startsWith(github.ref, 'refs/tags/')
-      with:
-        files: "ActionsTest-v*"
+    
+    - name: Create release
+      id: create_release
+      uses: actions/create_release@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: ${{ github.ref }}
+        release_name: ${{ github.ref }}
+        draft: false
+        prerelease: false
+    
+    - name: Publish
+      id: upload-release-asset
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: "ActionsTest-win-x64.zip"
+        asset_name: ActionsTest-win-x64.zip
+        asset_content_type: application/zip
