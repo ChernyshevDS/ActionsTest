@@ -18,7 +18,6 @@ jobs:
     steps:
     - name: Checkout
       uses: actions/checkout@v2
-      run: git fetch --prune --unshallow --tags
 
     - name: Install .NET Core
       uses: actions/setup-dotnet@v1
@@ -37,6 +36,7 @@ jobs:
     - name: Release
       shell: bash
       run: |
+        git fetch --prune --unshallow --tags
         tag=$(git describe --always)
         release_name="ActionsTest-$tag-win-x64"
         
