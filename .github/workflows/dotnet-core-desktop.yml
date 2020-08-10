@@ -32,3 +32,22 @@ jobs:
 
     - name: Execute unit tests
       run: dotnet test --no-build --configuration Release
+      
+    - name: Release
+      shell: bash
+      run: |
+        tag=$(git describe)
+        release_name="ActionsTest-$tag-win-x64"
+        
+        dotnet publish ActionsTest\ActionsTest.csproj --runtime win-x64 -c Release -o ${release_name} --self-contained false
+        
+        7z a -tzip "${release_name}.zip" "./${release_name}/*"
+        
+        rm -r "$release_name"
+        
+    - name: Publish
+      uses: softprops/action-gh-release@v1
+      with:
+        files: "ActionsTest-v*"
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
