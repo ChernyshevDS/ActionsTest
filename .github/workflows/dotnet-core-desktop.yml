@@ -36,6 +36,7 @@ jobs:
     - name: Release
       shell: bash
       run: |
+        git fetch --tags
         tag=$(git describe)
         release_name="ActionsTest-$tag-win-x64"
         
